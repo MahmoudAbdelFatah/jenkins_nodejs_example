@@ -1,30 +1,32 @@
 pipeline {
     agent any
+
     stages {
-        stage('Preparation') {
+        stage('test') {
             steps {
-                // Get some code from a GitHub repository
-                git 'https://github.com/mahmoud254/jenkins_nodejs_example.git'
+                echo 'testing the application...'
             }
         }
-        stage('Build') {
+        stage('build image') {
+            when {
+                expression {
+                    BRANCH_NAME == 'master'
+                }
+            }
             steps {
-                // Get some code from a GitHub repository
-                withCredentials([usernamePassword(credentialsId:"test",usernameVariable:"username",passwordVariable:"pass")]){
-                sh 'docker build . -t ${username}/jenkins_sprints:v1.0'
-                sh 'docker login -u ${username} -p ${pass}'
-                sh 'docker push ${username}/jenkins_sprints:v1.0'
-                }
+                echo 'Building the application...'
             }
-        }  
-        stage ('deploy'){
-            steps{
-                withCredentials([usernamePassword(credentialsId:"test",usernameVariable:"username",passwordVariable:"pass")]){
-                
-                sh 'docker run -p 3000:3000 -d ${username}/jenkins_sprints:v1.0'
-                }
-            }
-            
         }
+        stage('deploy image') {
+            when {
+                expression {
+                    BRANCH_NAME == 'master'
+                }
+            }
+            steps {
+                echo 'Building the application...'
+            }
+        }
+        
     }
 }
